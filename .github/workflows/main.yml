@@ -1,4 +1,4 @@
-name: Build APK
+Name: Build APK
 
 on:
   push:
@@ -31,22 +31,20 @@ jobs:
             cmake libncurses6 libstdc++6 lld cpuid libtinfo6 \
             libstdc++6:i386 build-essential libgmp3-dev xclip
 
-      - name: Install Buildozer
+      - name: Install Buildozer (Bản mới tương thích Ubuntu 24)
         run: |
           pip install --upgrade pip
-          pip install buildozer==1.5.0 cython==0.29.36 python-for-android==2024.1.21
+          pip install buildozer cython==3.0.10 python-for-android
 
       - name: Clean Buildozer Cache
         run: |
           rm -rf ~/.buildozer/android || true
           rm -rf .buildozer || true
 
-      - name: Install Buildozer
+      - name: Build APK with Buildozer (Bước quyết định)
         run: |
-          pip install --upgrade pip
-          # Sử dụng bản Buildozer mới nhất để tương thích tốt với Ubuntu 24
-          pip install buildozer cython==3.0.10 python-for-android
-
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
