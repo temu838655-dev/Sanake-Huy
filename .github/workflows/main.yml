@@ -35,18 +35,17 @@ jobs:
 
       - name: Install Buildozer
         run: |
-          python -m pip install --upgrade pip
-          pip install buildozer==1.5.0 cython==0.29.36
-          pip install python-for-android==2024.1.21
+          pip install --upgrade pip
+          pip install buildozer==1.5.0 cython==0.29.36 python-for-android==2024.1.21
 
-      # 🔥 CRITICAL FIX: remove internal buildozer SDK FIRST
-      - name: Remove Buildozer internal SDK
+      # 🔥 CRITICAL: FORCE SINGLE SDK SOURCE
+      - name: Remove Buildozer SDK
         run: |
-          rm -rf ~/.buildozer/android/platform/android-sdk || true
+          rm -rf ~/.buildozer/android || true
           rm -rf .buildozer || true
           rm -rf ~/.gradle || true
 
-      - name: Setup Android SDK (ROBUST FIX)
+      - name: Setup Android SDK
         run: |
           set -e
 
@@ -59,37 +58,25 @@ jobs:
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
 
-          echo "=== DEBUG STRUCTURE ==="
-          find . -type f -name sdkmanager
+          SDK=$(find . -type f -path "*bin/sdkmanager" | head -n 1)
 
-          # TỰ ĐỘNG TÌM sdkmanager thay vì đoán path
-          SDKMANAGER=$(find . -type f -path "*bin/sdkmanager" | head -n 1)
+          chmod +x $SDK
 
-          if [ -z "$SDKMANAGER" ]; then
-            echo "SDKMANAGER NOT FOUND"
-            exit 1
-          fi
+          yes | $SDK --sdk_root=$ANDROID_HOME --licenses
 
-          chmod +x $SDKMANAGER
-
-          echo "FOUND SDKMANAGER: $SDKMANAGER"
-
-          yes | $SDKMANAGER --sdk_root=$ANDROID_HOME --licenses
-
-          $SDKMANAGER --sdk_root=$ANDROID_HOME \
+          $SDK --sdk_root=$ANDROID_HOME \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
 
-          echo "=== VERIFY BUILD TOOLS ==="
-          ls $ANDROID_HOME/build-tools || true
-
-      - name: VERIFY BUILD TOOLS
-        run: |
-          ls -R $ANDROID_HOME/build-tools
+          echo "=== VERIFY ==="
+          ls $ANDROID_HOME/build-tools
 
       - name: Build APK
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+
           buildozer -v android debug
 
       - uses: actions/upload-artifact@v4
