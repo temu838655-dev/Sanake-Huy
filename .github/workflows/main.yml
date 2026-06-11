@@ -1,4 +1,4 @@
-name: Build APK
+Name: Build APK
 
 on:
   push:
@@ -9,9 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Khai báo biến môi trường toàn cục cho cả Job
     env:
-      ANDROID_HOME: $HOME/android-sdk
-      ANDROID_SDK_ROOT: $HOME/android-sdk
+      ANDROID_HOME: /home/runner/android-sdk
+      ANDROID_SDK_ROOT: /home/runner/android-sdk
 
     steps:
       - uses: actions/checkout@v4
@@ -38,45 +39,45 @@ jobs:
           pip install --upgrade pip
           pip install buildozer==1.5.0 cython==0.29.36 python-for-android==2024.1.21
 
-      # 🔥 CRITICAL: FORCE SINGLE SDK SOURCE
-      - name: Remove Buildozer SDK
+      # Xóa các thư mục rác nếu có từ cache cũ
+      - name: Clean Buildozer Cache
         run: |
           rm -rf ~/.buildozer/android || true
           rm -rf .buildozer || true
-          rm -rf ~/.gradle || true
 
       - name: Setup Android SDK
         run: |
           set -e
-
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
 
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
 
-          SDK=$(find . -type f -path "*bin/sdkmanager" | head -n 1)
-
+          # Di chuyển vào đúng cấu trúc thư mục cmdline-tools/latest theo chuẩn mới của Google
+          mkdir -p latest
+          mv cmdline-tools/* latest/ 2>/dev/null || true
+          
+          SDK=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
           chmod +x $SDK
 
           yes | $SDK --sdk_root=$ANDROID_HOME --licenses
 
+          # Tải chính xác các gói cần thiết
           $SDK --sdk_root=$ANDROID_HOME \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
 
-          echo "=== VERIFY ==="
-          ls $ANDROID_HOME/build-tools
+          echo "=== VERIFY SDK CHUẨN ==="
+          ls -la $ANDROID_HOME/build-tools/33.0.2/
 
       - name: Build APK
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-
+          # Ép buildozer nhận SDK ngoài thông qua các biến môi trường
+          export ANDROID_HOME=/home/runner/android-sdk
+          export ANDROID_SDK_ROOT=/home/runner/android-sdk
+          
           buildozer -v android debug
 
       - uses: actions/upload-artifact@v4
