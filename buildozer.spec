@@ -14,7 +14,7 @@ android.arch = arm64-v8a
 android.api = 33
 android.minapi = 21
 android.sdk = 33
-android.ndk = 25c
+android.ndk = 25.2.9519653
 android.build_tools_version = 33.0.2
 
 [buildozer]
