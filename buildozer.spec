@@ -11,10 +11,11 @@ requirements = python3,kivy==2.2.1
 orientation = portrait
 fullscreen = 1
 
-android.arch = arm64-v8a
+android.archs = arm64-v8a, armeabi-v7a
 android.minapi = 21
 android.ndk = 25.2.9519653
-
+android.sdk = 33
+android.gradle_version = 7.4
 [buildozer]
 log_level = 2
 warn_on_root = 1
