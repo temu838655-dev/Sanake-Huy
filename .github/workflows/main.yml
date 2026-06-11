@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -17,18 +16,20 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: |
-            .buildozer
-            ~/.buildozer
-          key: buildozer-v1-${{ runner.os }}
-
       - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libffi-dev libssl-dev cmake wget libncurses6 libstdc++6
+
+      # Bước quan trọng: Tự cài đặt Android SDK/NDK trước khi chạy buildozer
+      - name: Setup Android SDK/NDK
+        run: |
+          mkdir -p ~/.buildozer/android/platform
+          # Cài đặt NDK phiên bản 25b thủ công để tránh lỗi download của buildozer
+          wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
+          unzip -q android-ndk-r25b-linux.zip -d ~/.buildozer/android/platform/
+          # Đặt biến môi trường để Buildozer nhận ra NDK đã có sẵn
+          echo "NDK_PATH=/home/runner/.buildozer/android/platform/android-ndk-r25b" >> $GITHUB_ENV
 
       - name: Install Buildozer
         run: |
@@ -37,8 +38,7 @@ jobs:
 
       - name: Build APK
         run: |
-          # Buildozer will use settings from buildozer.spec
-          # Directly running it avoids broken pipe issues
+          # Chạy buildozer trực tiếp
           buildozer -v android debug
 
       - name: Upload APK
