@@ -16,29 +16,10 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libffi-dev libssl-dev cmake wget libncurses6 libstdc++6
-
-      # Bước quan trọng: Tự cài đặt Android SDK/NDK trước khi chạy buildozer
-      - name: Setup Android SDK/NDK
-        run: |
-          mkdir -p ~/.buildozer/android/platform
-          # Cài đặt NDK phiên bản 25b thủ công để tránh lỗi download của buildozer
-          wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
-          unzip -q android-ndk-r25b-linux.zip -d ~/.buildozer/android/platform/
-          # Đặt biến môi trường để Buildozer nhận ra NDK đã có sẵn
-          echo "NDK_PATH=/home/runner/.buildozer/android/platform/android-ndk-r25b" >> $GITHUB_ENV
-      
-      - name: Setup Android SDK/NDK
-        run: |
-          mkdir -p ~/.buildozer/android/platform
-          wget -q https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
-          unzip -q android-ndk-r25b-linux.zip -d ~/.buildozer/android/platform/
-          # QUAN TRỌNG: Thiết lập biến môi trường mà Buildozer ưu tiên đọc
-          echo "ANDROID_NDK_HOME=/home/runner/.buildozer/android/platform/android-ndk-r25b" >> $GITHUB_ENV
-          echo "NDK_HOME=/home/runner/.buildozer/android/platform/android-ndk-r25b" >> $GITHUB_ENV
 
       - name: Install Buildozer
         run: |
@@ -47,7 +28,9 @@ jobs:
 
       - name: Build APK
         run: |
-          # Chạy buildozer trực tiếp
+          # Xóa các folder cũ để tránh xung đột cấu hình
+          rm -rf .buildozer
+          # Chạy buildozer
           buildozer -v android debug
 
       - name: Upload APK
