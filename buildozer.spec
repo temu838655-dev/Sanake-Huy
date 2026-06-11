@@ -8,28 +8,27 @@ source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
 
-# QUAN TRỌNG: dùng kivy ổn định hơn cho build CI
-requirements = python3,kivy==2.2.0
+# ======================
+# REQUIREMENTS
+# ======================
+requirements = python3,kivy
 
 orientation = portrait
 fullscreen = 1
 
 # ======================
-# ANDROID CONFIG FIXED
+# ANDROID CONFIG (STABLE)
 # ======================
 
-android.api = 35
+android.api = 33
 android.minapi = 21
-android.sdk = 35
-android.ndk = 25b
 
 android.archs = arm64-v8a,armeabi-v7a
 
-# bắt buộc cho CI
 android.accept_sdk_license = True
 
-# KHÔNG dùng gradle_version thủ công (rất dễ lỗi CI)
-# android.gradle_version = 7.4  ❌ XÓA DÒNG NÀY
+# NDK nên để buildozer tự chọn hoặc set nhẹ
+android.ndk = 23b
 
 # ======================
 # BUILD SYSTEM
