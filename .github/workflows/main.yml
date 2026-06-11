@@ -42,37 +42,44 @@ jobs:
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip
-          pip install buildozer==1.5.0 cython==0.29.36 python-for-android==2024.1.21
+          pip install buildozer==1.5.0 cython==0.29.36
+          pip install python-for-android==2024.1.21
 
-      - name: Setup Android SDK (FIXED STABLE)
+      - name: Setup Android SDK (FIXED)
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
 
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
 
-          # FIX structure
           mv cmdline-tools latest
 
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
 
           yes | sdkmanager --licenses
 
-          sdkmanager \
+          sdkmanager --sdk_root=$ANDROID_HOME \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
 
-      - name: Clean Buildozer cache
+      - name: Clean Buildozer cache (IMPORTANT)
         run: |
           rm -rf .buildozer
           rm -rf ~/.buildozer
+          rm -rf ~/.gradle
 
       - name: Build APK
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-          buildozer android debug
+
+          buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
