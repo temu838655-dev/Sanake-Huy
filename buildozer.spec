@@ -16,7 +16,7 @@ fullscreen = 1
 android.api = 33
 android.minapi = 21
 android.archs = arm64-v8a,armeabi-v7a
-android.sdk_path = /home/runner/android-sdk
+
 android.ndk = 25b
 
 log_level = 2
