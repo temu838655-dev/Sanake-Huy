@@ -68,7 +68,9 @@ jobs:
 
           # VERIFY không còn 37
           ls $ANDROID_HOME/build-tools
-
+      - name: Verify Build Tools
+        run: |
+          ls $HOME/android-sdk/build-tools
       - name: Clean cache (IMPORTANT)
         run: |
           rm -rf .buildozer ~/.buildozer ~/.gradle
