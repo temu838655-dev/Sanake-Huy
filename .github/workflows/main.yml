@@ -17,6 +17,9 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Set Java
+        run: echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+
       - name: Install system dependencies
         run: |
           sudo apt update
@@ -36,10 +39,6 @@ jobs:
         run: |
           rm -rf .buildozer
           rm -rf ~/.buildozer
-
-      - name: Init Buildozer (if needed)
-        run: |
-          test -f buildozer.spec || buildozer init
 
       - name: Build APK
         run: |
