@@ -1,50 +1,45 @@
-name: Build APK
+- uses: actions/checkout@v4
 
-on:
-  push:
-    branches: [ main ]
+- name: Setup Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: '3.10'
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+- name: Install dependencies
+  run: |
+    sudo apt update
+    sudo apt install -y git zip unzip openjdk-17-jdk \
+    python3-pip python3-setuptools python3-wheel \
+    autoconf libtool pkg-config cmake libffi-dev libssl-dev
 
-    steps:
-    - uses: actions/checkout@v4
+- name: Setup Android SDK cmdline-tools
+  run: |
+    mkdir -p $ANDROID_HOME/cmdline-tools
+    cd $ANDROID_HOME/cmdline-tools
+    wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
+    unzip tools.zip
+    mv cmdline-tools latest
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+- name: Accept licenses + install SDK
+  run: |
+    yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
-    - name: Install system dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          git zip unzip openjdk-17-jdk \
-          python3-pip python3-setuptools python3-wheel \
-          autoconf libtool pkg-config \
-          zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo-dev \
-          cmake libffi-dev libssl-dev
+    $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+      "platform-tools" \
+      "platforms;android-33" \
+      "build-tools;33.0.2"
 
-    - name: Enable 32-bit support
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt update
-        sudo apt install -y \
-          libc6:i386 libncurses6:i386 libstdc++6:i386 lib32z1
+- name: Install Buildozer
+  run: |
+    pip install --upgrade pip
+    pip install buildozer cython
 
-    - name: Install Buildozer + Cython
-      run: |
-        pip install --upgrade pip
-        pip install buildozer cython
+- name: Build APK
+  run: |
+    buildozer -v android debug
 
-    - name: Build APK
-      run: |
-        export ANDROIDSDK_ACCEPT_LICENSES=1
-        buildozer -v android debug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: apk
-        path: bin/*.apk
+- name: Upload APK
+  uses: actions/upload-artifact@v4
+  with:
+    name: apk
+    path: bin/*.apk
