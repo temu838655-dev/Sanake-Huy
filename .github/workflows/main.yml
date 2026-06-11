@@ -42,13 +42,12 @@ jobs:
           rm -rf .buildozer || true
 
       - name: Build APK with Buildozer
-        # Đã thêm env bên dưới để xóa đường dẫn NDK mặc định (r27) của GitHub runner
         env:
           ANDROID_NDK_HOME: ""
           ANDROID_NDK_ROOT: ""
         run: |
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          buildozer android clean
+          # Đã bỏ lệnh buildozer android clean gây lỗi ở đây
           buildozer -v android debug
 
       - name: Upload APK Artifact
