@@ -40,21 +40,29 @@ jobs:
           pip install buildozer==1.5.0 cython==0.29.36
           pip install python-for-android==2024.1.21
 
-      - name: Install Android SDK (LOCKED)
+      - name: Setup Android SDK (FIXED 100%)
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
 
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
 
-          mv cmdline-tools latest
+          # FIX chuẩn Google structure (KHÔNG mv bậy)
+          mv cmdline-tools latest || true
 
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
 
-          yes | sdkmanager --licenses
+          ls -la $ANDROID_HOME/cmdline-tools/latest/bin
 
-          sdkmanager \
+          chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
