@@ -21,6 +21,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+
       - name: Install deps
         run: |
           sudo dpkg --add-architecture i386
@@ -28,8 +31,9 @@ jobs:
           sudo apt install -y git zip unzip wget curl \
             autoconf libtool pkg-config \
             zlib1g-dev libffi-dev libssl-dev \
-            cmake libncurses6 libstdc++6 lld cpuid libtinfo6 \
-            libstdc++6:i386 build-essential libgmp3-dev xclip
+            cmake libncurses6 libncursesw5-dev libstdc++6 lld cpuid \
+            libtinfo6 libgmp3-dev build-essential xclip \
+            libsqlite3-dev liblzma-dev libxml2-dev libxslt1-dev
 
       - name: Install Buildozer
         run: |
@@ -41,16 +45,12 @@ jobs:
           rm -rf ~/.buildozer/android || true
           rm -rf .buildozer || true
 
-      - name: Build APK with Buildozer
-        env:
-          ANDROID_NDK_HOME: ""
-          ANDROID_NDK_ROOT: ""
+      - name: Build APK
         run: |
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          # Đã bỏ lệnh buildozer android clean gây lỗi ở đây
           buildozer -v android debug
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
