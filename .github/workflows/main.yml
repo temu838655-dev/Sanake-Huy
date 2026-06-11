@@ -25,7 +25,7 @@ jobs:
             autoconf libtool pkg-config \
             zlib1g-dev libffi-dev libssl-dev \
             cmake wget python3-pip \
-            libncurses5 libstdc++6
+            libncurses6 libstdc++6
 
       - name: Install Buildozer
         run: |
