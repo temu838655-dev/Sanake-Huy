@@ -47,10 +47,8 @@ jobs:
 
           unzip -q commandlinetools-linux-13114758_latest.zip
 
-          mkdir -p cmdline-tools/latest
-
-          cp -r cmdline-tools/* cmdline-tools/latest/ || true
-
+          mkdir -p cmdline-tools
+mv cmdline-tools cmdline-tools/latest
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager \
