@@ -11,29 +11,31 @@ version = 0.1
 # ======================
 # REQUIREMENTS
 # ======================
-requirements = python3,kivy
+requirements = python3,kivy==2.2.0
 
+# ======================
+# DISPLAY
+# ======================
 orientation = portrait
 fullscreen = 1
 
 # ======================
-# ANDROID CONFIG (STABLE)
+# ANDROID STABLE CONFIG
 # ======================
-
 android.api = 33
 android.minapi = 21
 
 android.archs = arm64-v8a,armeabi-v7a
 
-android.accept_sdk_license = True
+# QUAN TRỌNG: tránh build-tools 37 lỗi AIDL
+android.sdk = 33
+android.build_tools_version = 33.0.2
 
-# NDK nên để buildozer tự chọn hoặc set nhẹ
-android.ndk = 23b
+# NDK ổn định cho kivy CI
+android.ndk = 25b
 
 # ======================
-# BUILD SYSTEM
+# DEBUG / BUILD
 # ======================
-
-[buildozer]
 log_level = 2
 warn_on_root = 0
