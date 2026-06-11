@@ -13,7 +13,7 @@ fullscreen = 1
 
 android.archs = arm64-v8a, armeabi-v7a
 android.minapi = 21
-android.ndk = 25.2.9519653
+android.ndk = 28c
 android.sdk = 33
 android.gradle_version = 7.4
 [buildozer]
