@@ -1,4 +1,4 @@
-Name: Build APK
+name: Build APK
 
 on:
   push:
@@ -31,10 +31,9 @@ jobs:
             cmake libncurses6 libstdc++6 lld cpuid libtinfo6 \
             libstdc++6:i386 build-essential libgmp3-dev xclip
 
-      - name: Install Buildozer (Cố định phiên bản ổn định)
+      - name: Install Buildozer
         run: |
           pip install --upgrade pip
-          # Sử dụng bộ ba phiên bản phối hợp tốt nhất, tránh lỗi biên dịch C
           pip install buildozer==1.5.0 cython==0.29.36 python-for-android==2024.1.21
 
       - name: Clean Buildozer Cache
