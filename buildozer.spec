@@ -12,10 +12,11 @@ orientation = portrait
 fullscreen = 1
 
 # Cấu hình Android
-android.api = 33
+android.api = 35
 android.minapi = 21
-android.sdk = 33
+android.sdk = 35
 android.ndk = 25b
+android.accept_sdk_license = True
 android.gradle_version = 7.4
 android.archs = arm64-v8a, armeabi-v7a
 
