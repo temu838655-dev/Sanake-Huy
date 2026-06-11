@@ -28,10 +28,16 @@ jobs:
 
       - name: Build APK
         run: |
-          # Xóa các folder cũ để tránh xung đột cấu hình
-          rm -rf .buildozer
-          # Chạy buildozer
+          # 1. Tạo thư mục cấu hình Android
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          
+          # 2. Chạy lệnh build (lần đầu sẽ cài đặt SDK)
+          # Thêm biến môi trường để Buildozer tự động chấp nhận license nếu có thể
           buildozer -v android debug
+        env:
+          # Ép buộc chấp nhận license thông qua biến môi trường của Android SDK
+          ANDROID_SDK_HOME: /home/runner/.buildozer/android/platform/android-sdk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
