@@ -34,50 +34,45 @@ jobs:
             zlib1g-dev libffi-dev libssl-dev \
             cmake libncurses6 libstdc++6
 
-      - name: Install Buildozer (PINNED)
+      - name: Install Buildozer
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install buildozer==1.5.0 cython==0.29.36
           pip install python-for-android==2024.1.21
 
-      - name: Setup Android SDK (HARD LOCK FIX)
+      - name: Setup Android SDK (HARD LOCK)
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
 
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
 
-          mv cmdline-tools latest || true
+          mv cmdline-tools latest
 
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
 
-          # FORCE clean install (QUAN TRỌNG)
-          rm -rf $ANDROID_HOME/build-tools
-          rm -rf $ANDROID_HOME/platforms
+          yes | sdkmanager --licenses
 
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME \
+          sdkmanager --sdk_root=$ANDROID_HOME \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
 
-          # VERIFY không còn 37
-          ls $ANDROID_HOME/build-tools
       - name: Verify Build Tools
         run: |
-          ls $HOME/android-sdk/build-tools
-      - name: Clean cache (IMPORTANT)
+          ls $ANDROID_HOME/build-tools
+
+      - name: Clean cache
         run: |
           rm -rf .buildozer ~/.buildozer ~/.gradle
 
       - name: Build APK
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+
           buildozer -v android debug
 
       - uses: actions/upload-artifact@v4
