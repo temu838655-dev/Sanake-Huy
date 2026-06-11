@@ -40,7 +40,7 @@ jobs:
           pip install buildozer==1.5.0 cython==0.29.36
           pip install python-for-android==2024.1.21
 
-      - name: Setup Android SDK (FIXED 100%)
+      - name: Setup Android SDK (HARD LOCK FIX)
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export ANDROID_SDK_ROOT=$HOME/android-sdk
@@ -51,21 +51,23 @@ jobs:
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
           unzip -q commandlinetools-linux-*.zip
 
-          # FIX chuẩn Google structure (KHÔNG mv bậy)
           mv cmdline-tools latest || true
 
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin
-
-          chmod +x $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          # FORCE clean install (QUAN TRỌNG)
+          rm -rf $ANDROID_HOME/build-tools
+          rm -rf $ANDROID_HOME/platforms
 
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
+
+          # VERIFY không còn 37
+          ls $ANDROID_HOME/build-tools
 
       - name: Clean cache (IMPORTANT)
         run: |
