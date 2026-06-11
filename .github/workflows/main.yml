@@ -41,10 +41,12 @@ jobs:
           rm -rf ~/.buildozer/android || true
           rm -rf .buildozer || true
 
-      - name: Build APK with Buildozer
+      - name: Install Buildozer
         run: |
-          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          buildozer -v android debug
+          pip install --upgrade pip
+          # Sử dụng bản Buildozer mới nhất để tương thích tốt với Ubuntu 24
+          pip install buildozer cython==3.0.10 python-for-android
+
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
