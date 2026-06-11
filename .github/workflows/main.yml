@@ -17,46 +17,29 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Set Java
-        run: echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-
-      # 🔥 Cache để tránh lỗi download NDK / SDK giữa chừng
       - name: Cache Buildozer
         uses: actions/cache@v4
         with:
           path: |
             .buildozer
             ~/.buildozer
-          key: buildozer-cache
+          key: buildozer-v1-${{ runner.os }}
 
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y \
-            git zip unzip openjdk-17-jdk \
-            autoconf libtool pkg-config \
-            zlib1g-dev libffi-dev libssl-dev \
-            cmake wget python3-pip \
-            libncurses6 libstdc++6
+          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libffi-dev libssl-dev cmake wget libncurses6 libstdc++6
 
       - name: Install Buildozer
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install buildozer==1.5.0 cython==0.29.36
-
-      # 🔥 Fix NDK version ổn định (tránh auto chọn r27/r28 gây crash)
-      - name: Force stable NDK
-        run: |
-          echo "ANDROIDNDK=r25c" >> $GITHUB_ENV
-
-      - name: Clean cache
-        run: |
-          rm -rf .buildozer
-          rm -rf ~/.buildozer/android/platform/android-ndk*
 
       - name: Build APK
         run: |
-          yes | buildozer -v android debug
+          # Buildozer will use settings from buildozer.spec
+          # Directly running it avoids broken pipe issues
+          buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
