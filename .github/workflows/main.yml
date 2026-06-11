@@ -25,12 +25,11 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt update
-          # Thêm lld, cpuid, libtinfo5 và các gói i386 bắt buộc cho môi trường Ubuntu mới
           sudo apt install -y git zip unzip wget curl \
             autoconf libtool pkg-config \
             zlib1g-dev libffi-dev libssl-dev \
             cmake libncurses6 libstdc++6 lld cpuid libtinfo5 \
-            libstdc++6:i386
+            libstdc++6:i386 build-essential libgmp3-dev xclip
 
       - name: Install Buildozer
         run: |
@@ -45,7 +44,6 @@ jobs:
       - name: Build APK with Buildozer
         run: |
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          # Ép chạy với log chi tiết nhất để dễ soi lỗi nếu có sự cố
           buildozer -v android debug
 
       - name: Upload APK Artifact
