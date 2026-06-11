@@ -30,6 +30,7 @@ jobs:
           unzip -q android-ndk-r25b-linux.zip -d ~/.buildozer/android/platform/
           # Đặt biến môi trường để Buildozer nhận ra NDK đã có sẵn
           echo "NDK_PATH=/home/runner/.buildozer/android/platform/android-ndk-r25b" >> $GITHUB_ENV
+      
       - name: Setup Android SDK/NDK
         run: |
           mkdir -p ~/.buildozer/android/platform
