@@ -12,7 +12,6 @@ jobs:
     env:
       ANDROID_HOME: $HOME/android-sdk
       ANDROID_SDK_ROOT: $HOME/android-sdk
-      ANDROIDSDK: $HOME/android-sdk
 
     steps:
       - uses: actions/checkout@v4
@@ -39,12 +38,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer==1.5.0 cython==0.29.36
           pip install python-for-android==2024.1.21
-      - name: Setup Android SDK (FINAL FIX)
+
+      # 🔥 CRITICAL FIX: remove internal buildozer SDK FIRST
+      - name: Remove Buildozer internal SDK
+        run: |
+          rm -rf ~/.buildozer/android/platform/android-sdk || true
+          rm -rf .buildozer || true
+          rm -rf ~/.gradle || true
+
+      - name: Setup Android SDK (LOCKED)
         run: |
           set -e
-
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
 
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
@@ -56,38 +60,23 @@ jobs:
             mv cmdline-tools latest
           fi
 
-          echo "=== CHECK SDKMANAGER ==="
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin
+          SDK=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          chmod +x $SDK
 
-          SDKMANAGER=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          yes | $SDK --sdk_root=$ANDROID_HOME --licenses
 
-          chmod +x $SDKMANAGER
-
-          echo "=== ACCEPT LICENSES ==="
-          yes | $SDKMANAGER --sdk_root=$ANDROID_HOME --licenses
-
-          echo "=== INSTALL SDK ==="
-          $SDKMANAGER --sdk_root=$ANDROID_HOME \
+          $SDK --sdk_root=$ANDROID_HOME \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;33.0.2"
 
-          echo "=== VERIFY RESULT ==="
-          ls -la $ANDROID_HOME/build-tools
-      - name: Verify Build Tools (FIXED)
+      - name: VERIFY BUILD TOOLS
         run: |
-          echo "ANDROID_HOME=$HOME/android-sdk"
-          ls -R $HOME/android-sdk/build-tools || true
-      - name: Clean cache
-        run: |
-          rm -rf .buildozer ~/.buildozer ~/.gradle
+          ls -R $ANDROID_HOME/build-tools
 
       - name: Build APK
         run: |
-          export ANDROID_HOME=$HOME/android-sdk
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-          export BUILDOZER_ANDROID_SDK=$HOME/android-sdk
-          buildozer android debug
+          buildozer -v android debug
 
       - uses: actions/upload-artifact@v4
         with:
