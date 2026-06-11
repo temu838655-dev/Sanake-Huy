@@ -38,7 +38,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer==1.5.0 cython==0.29.36
 
-      - name: Setup Android SDK (FIXED)
+      - name: Setup Android SDK (FIX STABLE)
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           export ANDROID_SDK_ROOT=$HOME/android-sdk
@@ -46,8 +46,8 @@ jobs:
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
 
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
-          unzip -q commandlinetools-linux-13114758_latest.zip
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-*.zip
 
           mv cmdline-tools latest
 
