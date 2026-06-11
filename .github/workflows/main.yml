@@ -74,10 +74,10 @@ jobs:
 
           echo "=== VERIFY RESULT ==="
           ls -la $ANDROID_HOME/build-tools
-      - name: Verify Build Tools
+      - name: Verify Build Tools (FIXED)
         run: |
-          ls $ANDROID_HOME/build-tools
-
+          echo "ANDROID_HOME=$HOME/android-sdk"
+          ls -R $HOME/android-sdk/build-tools || true
       - name: Clean cache
         run: |
           rm -rf .buildozer ~/.buildozer ~/.gradle
