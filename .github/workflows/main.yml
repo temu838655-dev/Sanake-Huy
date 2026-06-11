@@ -9,10 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_HOME: /home/runner/android-sdk
-      ANDROID_SDK_ROOT: /home/runner/android-sdk
-
     steps:
       - uses: actions/checkout@v4
 
@@ -43,39 +39,14 @@ jobs:
           rm -rf ~/.buildozer/android || true
           rm -rf .buildozer || true
 
-      - name: Setup Android SDK
+      - name: Build APK with Buildozer
         run: |
-          set -e
-          # Tạo cấu hình thư mục cmdline-tools/latest đúng chuẩn Google
-          mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          cd $ANDROID_HOME/cmdline-tools
-          
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip -q commandlinetools-linux-9477386_latest.zip
-          
-          # Di chuyển các file vừa giải nén vào thư mục latest
-          mv cmdline-tools/* latest/ 2>/dev/null || true
-          
-          SDK=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
-          chmod +x $SDK
-
-          yes | $SDK --sdk_root=$ANDROID_HOME --licenses
-
-          $SDK --sdk_root=$ANDROID_HOME \
-            "platform-tools" \
-            "platforms;android-33" \
-            "build-tools;33.0.2"
-
-          echo "=== VERIFY SDK ==="
-          ls -la $ANDROID_HOME/build-tools/33.0.2/
-
-      - name: Build APK
-        run: |
-          export ANDROID_HOME=/home/runner/android-sdk
-          export ANDROID_SDK_ROOT=/home/runner/android-sdk
+          # Ép Buildozer tự động đồng ý với mọi License Android SDK phát sinh khi tải về
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer -v android debug
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: apk
+          name: my-app-apk
           path: bin/*.apk
