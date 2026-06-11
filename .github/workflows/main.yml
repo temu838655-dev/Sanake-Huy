@@ -47,20 +47,24 @@ jobs:
 
           unzip -q commandlinetools-linux-13114758_latest.zip
 
-          mkdir -p cmdline-tools
-mv cmdline-tools cmdline-tools/latest
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          mv cmdline-tools cmdline-tools/latest
 
-          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager \
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+
+          yes | sdkmanager --licenses
+
+          sdkmanager \
             "platform-tools" \
-            "platforms;android-35" \
-            "build-tools;35.0.0"
+            "platforms;android-33" \
+            "build-tools;34.0.0"
 
       - name: Build APK
         env:
-          ANDROIDSDK: $HOME/android-sdk
           ANDROID_HOME: $HOME/android-sdk
           ANDROID_SDK_ROOT: $HOME/android-sdk
+          PATH: $HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH
         run: |
           buildozer android debug
 
