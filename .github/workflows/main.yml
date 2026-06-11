@@ -28,7 +28,7 @@ jobs:
           sudo apt install -y git zip unzip wget curl \
             autoconf libtool pkg-config \
             zlib1g-dev libffi-dev libssl-dev \
-            cmake libncurses6 libstdc++6 lld cpuid libtinfo5 \
+            cmake libncurses6 libstdc++6 lld cpuid libtinfo6 \
             libstdc++6:i386 build-essential libgmp3-dev xclip
 
       - name: Install Buildozer
